@@ -10,19 +10,15 @@ const updateMyProfile = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const {
         fullName,
-        email,
         phoneNumber,
-        playerName,
-        playerUID,
-        customUrls
     } = req.body
 
-    if (!_id || !fullName || !email || !phoneNumber || !playerName || !playerUID, !customUrls) {
+    if (!_id || !fullName || !phoneNumber) {
         throw new ApiError(404, "Enter All The Fields")
     }
 
     const user = await User.findByIdAndUpdate(_id,
-        { fullName, email, phoneNumber, playerName, playerUID, customUrls },
+        { fullName, phoneNumber },
         { new: true }
     )
 
@@ -47,7 +43,7 @@ const getMyProfile = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-        message: "User Fetched Successfully By User ID",
+        message: "My Profile Fetched Successfully",
         user
     })
 })
@@ -78,35 +74,14 @@ const deleteMyAccount = asyncHandler(async (req, res) => {
 })
 
 
-// Find Players
-const findPlayers = asyncHandler(async (req, res) => {
+// Get All 
+const getAllUsers = asyncHandler(async (req, res) => {
     console.log("Entered Into Get All Users Controller")
 
     const features = new APIFeatures(
-        User.find(),
+        User.find().select("-isDeleted"),
         req.query
-    ).search(["fullName", "playerName", "playerUID"]).paginate()
-    const users = await features.query.select("fullName playerName playerUID")
-    const countDocument = await User.countDocuments()
-
-    res.status(200).json({
-        message: "Users Fetched Successfully",
-        totalDocument: countDocument,
-        count: users.length,
-        users
-    })
-})
-
-
-// Admin Routes
-
-const getAllPlayers = asyncHandler(async (req, res) => {
-    console.log("Entered Into Get All Users Controller")
-
-    const features = new APIFeatures(
-        User.find(),
-        req.query
-    ).filter().search(["fullName", "playerName", "playerUID"]).paginate()
+    ).filter().search(["fullName"]).paginate()
     const users = await features.query
     const countDocument = await User.countDocuments()
 
@@ -118,7 +93,8 @@ const getAllPlayers = asyncHandler(async (req, res) => {
     })
 })
 
-const getPlayerById = asyncHandler(async (req, res) => {
+
+const getStudentById = asyncHandler(async (req, res) => {
     console.log("Entered Into Get User By Id Controller")
     const { userId } = req.params;
 
@@ -134,15 +110,69 @@ const getPlayerById = asyncHandler(async (req, res) => {
 })
 
 
+// Role Request
+const becomeTeacher = asyncHandler(async (req, res) => {
+    console.log("Entered Into Become A Teacher")
+    const id = req.user._id
+
+    const request = await User.findByIdAndUpdate(
+        id,
+        { roleRequest: true },
+        { new: true }
+    )
+    if (!request) {
+        throw new ApiError(404, "User Not Found")
+    }
+
+    res.status(200).json({
+        message: "Role Request Send Successfully"
+    })
+})
+
+
+// Admin, SuperAdmin
+const getRoleRequests = asyncHandler(async (req, res) => {
+    console.log("Entered Into Get Role Requests")
+    const requests = await User.find({ roleRequest: true })
+    .select("fullName email department roleRequest")
+
+    res.status(200).json({
+        message: "Requests Fetched Successfully",
+        requests
+    })
+})
+
+
+const approveTeacher = asyncHandler(async (req, res) => {
+    console.log("Entered Into Approve Teacher")
+    const { teacher } = req.params
+
+    const approve = await User.findByIdAndUpdate(
+        teacher,
+        { role: "teacher", roleRequest: false },
+        { new: true }
+    )
+    if (!approve) {
+        throw new ApiError(404, "User Role Request Not Found")
+    }
+
+    res.status(200).json({
+        message: "Role Update Successfully"
+    })
+
+})
+
+
 
 export {
-    // Private Routes
     updateMyProfile,
     getMyProfile,
     deleteMyAccount,
-    findPlayers,
+    getStudentById,
+    getAllUsers,
+    becomeTeacher,
 
-    // Admin Routes
-    getPlayerById,
-    getAllPlayers,
+    // Admin
+    getRoleRequests,
+    approveTeacher,
 }

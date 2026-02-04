@@ -13,6 +13,12 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    department: {
+        type: String,
+        enum: ["CSE", "IT", "MECH", "EEE", "ECE", "CIVIL", "CHEMICAL", "PHYSICS", "OTHERS"],
+        required: true,
+        default: "OTHERS"
+    },
     password: {
         type: String,
         required: true,
@@ -22,34 +28,17 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    playerName: {
-        type: String,
-        required: true
-    },
-    playerUID: {
-        type: String,
-        required: true
-    },
     role: {
         type: String,
-        enum: ["user", "manager", "admin", "superadmin"],
-        default: "user"
+        enum: ["student", "teacher", "superadmin"],
+        default: "student"
     },
-    customUrls: [{
-        linkName: {
-            type: String,
-            required: true
-        },
-        link: {
-            type: String,
-            required: true
-        },
-    }],
     isDeleted: {
         type: Boolean,
         default: false
     },
-    passwordResetToken: String
+    passwordResetToken: String,
+    roleRequest: Boolean
 }, { timestamps: true })
 
 

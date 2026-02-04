@@ -1,5 +1,3 @@
-import { Match } from "../models/match.model.js";
-import { Tournament } from "../models/tournament.model.js";
 import { User } from "../models/user.model.js";
 import { jwtVerify } from "../utils/jwt.utils.js";
 

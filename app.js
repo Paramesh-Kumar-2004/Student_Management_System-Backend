@@ -1,43 +1,61 @@
-const express = require("express")
-const path = require("path")
-const bodyparser = require("body-parser")
-const cors = require("cors")
-const dotenv = require("dotenv").config()
+import express from "express"
+import cors from "cors"
+import dotenv from "dotenv"
 
-// Middlewares
-const ErrorMiddlware = require("./src/Middlewares/Error.js")
+// Database
+import connectDB from "./src/dB/connectDB.js"
+
+// Routes
+import AuthRoutes from "./src/routes/auth.routes.js"
+import UserRoutes from "./src/routes/user.routes.js"
+import ClassRoutes from "./src/routes/class.routes.js"
+
+
+// Error Middleware
+import errorMiddleware from "./src/middlewares/error.middleware.js"
+
+
+// Loading Environment Variables First
+dotenv.config()
 
 const app = express()
 
 
-// Data Passing And Receving & Default Middleware
-app.use(cors({ origin: "*" }))
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Default Middlewares
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use("/public", express.static("public"))
+app.use(cors())
 
 
-// Routes Import
-const UserRoutes = require("./src/Routes/UserRoutes.js")
-// DB Import
-const ConnectDB = require("./src/DBConfig/DbConfig.js")
+// Connect DB
+connectDB()
+
 
 // Routes
-app.use("/api/v1", UserRoutes)
+app.use("/api/v1/auth", AuthRoutes)
+app.use("/api/v1/user", UserRoutes)
+app.use("/api/v1/class", ClassRoutes)
 
 
-
-// Data Base Connection
-ConnectDB()
-
-app.use(ErrorMiddlware);
-
-
+// Health Check
 app.get("/", (req, res) => {
-    res.status(200).json({
-        message: "Profile Manager Server Started"
+    res.status(200).send("Tournament Server Running...")
+})
+
+// 404 API Not Found
+app.use((req, res, next) => {
+    res.status(404).json({
+        success: false,
+        message: "API Not Found"
     })
 })
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server Running At The Port : http://localhost:${process.env.PORT}`)
+
+// Error Middleware
+app.use(errorMiddleware)
+
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+    console.log(`Server Started At The Port : ${PORT}`)
 })

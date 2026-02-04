@@ -7,30 +7,36 @@ import {
     updateMyProfile,
     deleteMyAccount,
     getMyProfile,
-    findPlayers,
-    getAllPlayers,
-    getPlayerById,
+    getStudentById,
+    getAllUsers,
+    becomeTeacher,
+    approveTeacher,
+    getRoleRequests,
 } from "../controllers/user.controllers.js";
 
 
 const router = express.Router()
 
 
-
 // Protected Routes
 router.get("/me", authentication, getMyProfile);
 router.patch("/me", authentication, updateMyProfile);
-router.get("/find-players", authentication, findPlayers)
 router.delete("/me", authentication, deleteMyAccount);
+router.get("/all", authentication, getAllUsers)
+router.patch('/become-teacher', authentication, becomeTeacher)
 
-
-// Super Admin , Admin , Manager Routes (RBAC)
-router.get("/user/:userId",
-    authentication, authorization(["admin", "superadmin", "manager"]), getPlayerById
+// Admin Routes
+router.get("/one/:userId",
+    authentication, authorization(["teacher", "superadmin"]),
+    getStudentById
 )
-router.get("/users",
-    authentication, authorization(["superadmin", "admin", "manager"]),
-    getAllPlayers
+router.get("/requests",
+    authentication, authorization(["superadmin"]),
+    getRoleRequests
+)
+router.patch("/approve/:teacher",
+    authentication, authorization(["superadmin"]),
+    approveTeacher
 )
 
 export default router

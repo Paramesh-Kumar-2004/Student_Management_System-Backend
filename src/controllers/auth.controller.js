@@ -11,15 +11,13 @@ const registerUser = asyncHandler(async (req, res) => {
     console.log("Entered Into Register Controller")
     const {
         fullName,
-        playerName,
-        playerUID,
         email,
         password,
         phoneNumber,
-        customUrls
+        department
     } = req.body;
 
-    if (!fullName || !playerName || !playerUID || !email || !password || !phoneNumber || !customUrls) {
+    if (!fullName || !email || !password || !phoneNumber || !department) {
         throw new ApiError(404, "Enter All The Fields")
     }
 
@@ -29,7 +27,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     const addUser = await User.create({
-        fullName, playerName, playerUID, email, password, phoneNumber, customUrls
+        fullName, email, password, phoneNumber, department
     })
 
     res.status(200).json({
