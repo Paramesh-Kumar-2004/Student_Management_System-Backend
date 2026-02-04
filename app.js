@@ -11,8 +11,9 @@ import UserRoutes from "./src/routes/user.routes.js"
 import ClassRoutes from "./src/routes/class.routes.js"
 
 
-// Error Middleware
+// Middlewares
 import errorMiddleware from "./src/middlewares/error.middleware.js"
+import { authentication } from "./src/middlewares/auth.middleware.js"
 
 
 // Loading Environment Variables First
@@ -25,7 +26,10 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use("/public", express.static("public"))
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 
 
 // Connect DB
@@ -39,8 +43,10 @@ app.use("/api/v1/class", ClassRoutes)
 
 
 // Health Check
-app.get("/", (req, res) => {
-    res.status(200).send("Tournament Server Running...")
+app.get("/", authentication, (req, res) => {
+    res.status(200).json({
+        message: "Tournament Server Running..."
+    })
 })
 
 // 404 API Not Found
