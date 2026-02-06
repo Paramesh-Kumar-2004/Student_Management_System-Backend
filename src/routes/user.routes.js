@@ -23,10 +23,10 @@ router.get("/me", authentication, getMyProfile);
 router.patch("/me", authentication, updateMyProfile);
 router.delete("/me", authentication, deleteMyAccount);
 router.get("/all", authentication, getAllUsers)
-router.patch('/become-teacher', authentication, becomeTeacher)
+router.patch("/become-teacher", authentication, becomeTeacher)
 
 // Admin Routes
-router.get("/one/:userId",
+router.get("/:userId",
     authentication, authorization(["teacher", "superadmin"]),
     getStudentById
 )

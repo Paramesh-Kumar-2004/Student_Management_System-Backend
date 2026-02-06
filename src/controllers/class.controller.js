@@ -51,6 +51,23 @@ const getMyStudents = asyncHandler(async (req, res) => {
 })
 
 
+const getMyTeachers = asyncHandler(async (req, res) => {
+    console.log("Entered Into Get My Students")
+    const student = req.user._id
+
+    const teachers = await Class.find({ student })
+        .populate({
+            path: "teacher",
+            select: "fullName email department"
+        })
+
+    res.status(200).json({
+        messgae: "My Students List",
+        teachers
+    })
+})
+
+
 const removeMyStudent = asyncHandler(async (req, res) => {
     console.log("Entered Into Delete My Student")
     const { student } = req.params
@@ -66,7 +83,7 @@ const removeMyStudent = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-        message: "Student Removed From You Class"
+        message: "Student Removed From Your Class"
     })
 })
 
@@ -75,5 +92,6 @@ const removeMyStudent = asyncHandler(async (req, res) => {
 export {
     newStudent,
     getMyStudents,
+    getMyTeachers,
     removeMyStudent
 }

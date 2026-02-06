@@ -1,5 +1,6 @@
 import express from "express";
 import {
+    getMyTeachers,
     getMyStudents,
     newStudent,
     removeMyStudent
@@ -18,8 +19,12 @@ router.post("/:student",
     newStudent
 )
 router.get("/",
-    authentication, authorization(["teacher"]),
+    authentication, authorization(["teacher", "student"]),
     getMyStudents
+)
+router.get("/my-teacher",
+    authentication, authorization(["student"]),
+    getMyTeachers
 )
 router.delete("/:student",
     authentication, authorization(["teacher"]),

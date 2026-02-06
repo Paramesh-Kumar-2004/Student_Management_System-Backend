@@ -98,6 +98,10 @@ const getStudentById = asyncHandler(async (req, res) => {
     console.log("Entered Into Get User By Id Controller")
     const { userId } = req.params;
 
+    if (!userId) {
+        throw new ApiError(404, "User Id Is Required")
+    }
+
     const user = await User.findById(userId)
     if (!user) {
         throw new ApiError(404, "User Not Found")
@@ -134,7 +138,7 @@ const becomeTeacher = asyncHandler(async (req, res) => {
 const getRoleRequests = asyncHandler(async (req, res) => {
     console.log("Entered Into Get Role Requests")
     const requests = await User.find({ roleRequest: true })
-    .select("fullName email department roleRequest")
+        .select("fullName email department roleRequest")
 
     res.status(200).json({
         message: "Requests Fetched Successfully",
