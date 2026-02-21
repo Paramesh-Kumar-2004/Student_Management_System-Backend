@@ -27,8 +27,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use("/public", express.static("public"))
 app.use(cors({
-    origin: "https://paramesh-kumar-2004.github.io",
-    // origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials: true
 }))
 
